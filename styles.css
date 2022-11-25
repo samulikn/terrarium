@@ -12,7 +12,6 @@
     --light-blue: #e1eeec;
 }
 
-html,
 body {
     font-family: helvetica, arial, sans-serif;
     height: 100%;
@@ -24,7 +23,7 @@ h1 {
     text-align: center;
 }
 
-#page {
+html, #page {
     height: 100%;
     width: 100%;
     display: flex;
@@ -47,12 +46,12 @@ h1 {
 }
 
 #terrarium {
-    padding: 10px;
-    width: 70%;
+    padding: 5 px;
+    width: 64%;
 }
 
 .plant-holder {
-    height: 14%;
+    height: 11%;
 }
 
 .plant {
@@ -66,11 +65,10 @@ h1 {
     background: var(--blue);
     border-radius: 3rem;
     position: absolute;
-    bottom: 0.5%;
+    bottom: 2.8%;
     left: 20%;
     opacity: 0.5;
     z-index: 1;
-
 }
 
 .jar-top {
@@ -78,7 +76,7 @@ h1 {
     height: 5%;
     background: var(--blue);
     position: absolute;
-    bottom: 80%;
+    bottom: 82%;
     left: 30%;
     opacity: 0.7;
     z-index: 1;
@@ -89,7 +87,7 @@ h1 {
     height: 1%;
     background: var(--blue);
     position: absolute;
-    bottom: 0%;
+    bottom: 2%;
     left: 30%;
     opacity: 0.7;
 }
@@ -100,7 +98,7 @@ h1 {
     background: var(--grey);
     border-radius: 0 0 3rem 3rem;
     position: absolute;
-    bottom: 1%;
+    bottom: 3%;
     left: 21%;
     opacity: 0.7;
     z-index: -1;
