@@ -46,18 +46,23 @@ html, #page {
 }
 
 #terrarium {
-    padding: 5 px;
     width: 64%;
 }
 
 .plant-holder {
-    height: 11%;
+    height: 14%;
+    position: relative;
 }
 
 .plant {
-    width: 105%;
-    height: 105%;
-}
+    max-width: 150%;
+    max-height: 150%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    z-index: 2;
+    }
 
 .jar-walls {
     height: 80%;
@@ -98,7 +103,7 @@ html, #page {
     background: var(--grey);
     border-radius: 0 0 3rem 3rem;
     position: absolute;
-    bottom: 3%;
+    bottom: 4%;
     left: 21%;
     opacity: 0.7;
     z-index: -1;
@@ -124,5 +129,4 @@ html, #page {
     left: 7%;
     opacity: 1;
     bottom: 43%;
-
 }
