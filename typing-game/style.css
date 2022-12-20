@@ -84,6 +84,12 @@ button {
   border-radius: 0.3rem;
   padding: 8px;
   font-size: large;
+  display: inline-block;
+}
+
+input:focus,
+button:focus {
+  box-shadow: 2px 2px 5px var(--black);
 }
 
 /* The Modal (background) */

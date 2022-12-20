@@ -9,27 +9,36 @@
         'Nothing clears up a case so much as stating it to another person.',
         'Education never ends, Watson. It is a series of lessons, with the greatest for the last.',
         'Hello world.',
-        'Hi.',
     ];
     // store the list of words and the index of the word the player is currently typing
     let words = [];
     let wordIndex = 0;
     // the starting time
     let startTime = Date.now();
+    // length of quote
+    let quoteLenght = 0;
+    let storageQuote = '';
+    let elapsedTime = 0;
+    let savedMaxScore = 0;
     // page elements
     const quoteElement = document.getElementById('quote');
     const messageElement = document.getElementById('message');
     const typedValueElement = document.getElementById('typed-value');
     const modal = document.getElementById('modalBox');
     const closeBtn = document.getElementsByClassName('close')[0];
+    const startGame = document.getElementById('start');
 
+    function populateLocalStorage(storageQuote, elapsedTime) {
+        localStorage.setItem(storageQuote, elapsedTime);
+    }
 
     // start the game
-    document.getElementById('start').addEventListener('click', () => {
+    startGame.addEventListener('click', () => {
 
         // get a quote
         const quoteIndex = Math.floor(Math.random() * quotes.length);
         const quote = quotes[quoteIndex];
+
         // Put the quote into an array of words
         words = quote.split(' ');
         // reset the word index for tracking
@@ -72,19 +81,31 @@
         if (typedValue === currentWord && wordIndex === words.length - 1) {
 
             // Display success
-            const elapsedTime = new Date().getTime() - startTime;
-            const message = `You finished in ${elapsedTime / 1000} seconds.`;
-            messageElement.innerText = message;
+            elapsedTime = (new Date().getTime() - startTime) / 1000;
+            let message = `You finished in ${elapsedTime} seconds.`;
+            storageQuote = 'maxScoreForQuoteLength-' + quoteLenght;
             typedValueElement.disabled = true;
+            savedMaxScore = localStorage.getItem(storageQuote);
+
+            // collect max score in local storage
+            if (!localStorage.getItem(storageQuote)) {
+                // populate storage
+                populateLocalStorage(storageQuote, elapsedTime);
+            }
+            else if (savedMaxScore > elapsedTime) {
+                // update storage
+                populateLocalStorage(storageQuote, elapsedTime);
+                message = message + '\n You recorded the MAX score!';
+            };
+            messageElement.innerText = message;
 
             // Modal box for congratulations
             // Open modal box
             modal.style.display = 'block';
 
-
         } else if (typedValue.endsWith(' ') && typedValue.trim() === currentWord) {
             // end of word
-            // clear the typedValueElement for the new word
+            // clear the typedValueElement for the next word
             typedValueElement.value = '';
             // move to the next word
             wordIndex++;
@@ -110,6 +131,7 @@
     function closeModal() {
         modal.style.display = 'none';
         typedValueElement.style.display = 'none';
+        startGame.focus();
     };
 
     // When the user clicks anywhere outside of the modal, close it
