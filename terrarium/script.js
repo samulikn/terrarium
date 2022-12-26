@@ -1,15 +1,23 @@
 'use strict';
 
 const plants = document.querySelectorAll(".plant");
-let box = document.getElementById('page');
-let width = box.offsetWidth;
-let height = box.offsetHeight;
-//console.log("width", width);
+const page = document.getElementById('page');
+let width = 0;
+let height = 0;
 
-plants.forEach(dragElement);
+function getPageSize() {
+    width = page.offsetWidth;
+    height = page.offsetHeight;
+};
+
+getPageSize();
+
+window.onresize = getPageSize;
+
+plants.forEach(addDraggingHandler);
 plants.forEach(setElementToFront);
 
-function dragElement(terrariumElement) {
+function addDraggingHandler(terrariumElement) {
     //set 4 positions for positioning on the screen
     let relX = 0,
         relY = 0,
@@ -25,20 +33,26 @@ function dragElement(terrariumElement) {
     }
 
     function elementDrag(e) {
-        let rect = terrariumElement.getBoundingClientRect()
+        const boundingRect = terrariumElement.getBoundingClientRect()
 
         let y = Math.round(e.clientY);
         relY = absY - y;
-        if ((relY < 0 && (rect.bottom - relY) > height) || (relY > 0 && (rect.top - relY) < 0)) {
-            relY = 0
+
+        const isGoingBelowBottom = relY < 0 && (boundingRect.bottom - relY) > height
+        const isGoingAboveTop = relY > 0 && (boundingRect.top - relY) < 0
+        if (isGoingAboveTop || isGoingBelowBottom) {
+            relY = 0;
         } else {
             absY = y;
             terrariumElement.style.top = terrariumElement.offsetTop - relY + 'px';
         }
 
         let x = Math.round(e.clientX);
-        relX = absX - x
-        if ((relX < 0 && (rect.right - relX) >= width) || (relX > 0 && (rect.left - relX) <= 0)) {
+        relX = absX - x;
+
+        const isGoingOutsideRight = relX < 0 && (boundingRect.right - relX) > width;
+        const isGoingOutsiLeft = relX > 0 && (boundingRect.left - relX) < 0
+        if (isGoingOutsideRight || isGoingOutsiLeft) {
             relX = 0;
         }
         else {
@@ -53,33 +67,24 @@ function dragElement(terrariumElement) {
     }
 
     terrariumElement.onpointerdown = pointerDrag;
-}    
+};
 
-    //
-    function setElementToFront (terrariumElement) {
-        terrariumElement.addEventListener("dblclick", function(){
-            //Create array of all z-indexes 
-            let arrZindexes = [];
-            for (let i = 0; i < plants.length; i++){
-                let z = window.getComputedStyle(plants[i]).getPropertyValue("z-index");
-                arrZindexes.push(z);
+// function to get z-index
+let plant = -1;
+function getZindex(plant) {
+    return window.getComputedStyle(plant).getPropertyValue("z-index");
+};
+
+function setElementToFront(terrariumElement) {
+    terrariumElement.addEventListener("dblclick", function () {
+        let maxZindex = Number.MIN_SAFE_INTEGER
+        for (const i of plants) {
+            const z = getZindex(i);
+            if (maxZindex < z) {
+                maxZindex = z;
             }
+        }
 
-            let currentZindex = window.getComputedStyle(terrariumElement).getPropertyValue("z-index");
-            let maxZindex = FindMaxZindex(arrZindexes);
-            let maxPossibleZindex = 500;
-
-                //Finding the Max z-index
-            function FindMaxZindex(arrZindexes) {
-                return Math.max.apply(null, arrZindexes);
-            }
-
-            if (maxZindex < maxPossibleZindex){
-                let newZindex = maxZindex + 1;
-                terrariumElement.style.zIndex = newZindex;
-            }
-            else {
-                alert ("Reload the page!")
-            }            
-        });
-    };
+        terrariumElement.style.zIndex = maxZindex + 1;
+    });
+};
