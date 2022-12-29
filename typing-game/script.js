@@ -10,17 +10,10 @@
         'Education never ends, Watson. It is a series of lessons, with the greatest for the last.',
         'Hello world.',
     ];
-    // store the list of words and the index of the word the player is currently typing
     let words = [];
     let wordIndex = 0;
-    // the starting time
     let startTime = Date.now();
-    // length of quote
     let quoteLenght = 0;
-    let storageQuote = '';
-    let elapsedTime = 0;
-    let savedMaxScore = 0;
-    // page elements
     const quoteElement = document.getElementById('quote');
     const messageElement = document.getElementById('message');
     const typedValueElement = document.getElementById('typed-value');
@@ -28,113 +21,65 @@
     const closeBtn = document.getElementsByClassName('close')[0];
     const startGame = document.getElementById('start');
 
-    function populateLocalStorage(storageQuote, elapsedTime) {
-        localStorage.setItem(storageQuote, elapsedTime);
-    }
 
     // start the game
     startGame.addEventListener('click', () => {
-
-        // get a quote
-        const quoteIndex = Math.floor(Math.random() * quotes.length);
-        const quote = quotes[quoteIndex];
-
-        // Put the quote into an array of words
+        const quote = pickRandom(quotes)
+        quoteLenght = quote.length
         words = quote.split(' ');
-        // reset the word index for tracking
         wordIndex = 0;
+        quoteElement.innerHTML = spanWords(words);
 
-        // UI updates
-        // Create an array of span elements so we can set a class
-        const spanWords = words.map(function (word) { return `<span>${word} </span>` });
-        // Convert into string and set as innerHTML on quote display
-        quoteElement.innerHTML = spanWords.join('');
-        // Highlight the first word
-        quoteElement.childNodes[0].className = 'highlight';
+        highlightWord(wordIndex);
+        prepareInputBoxForTyping();
 
-        // Enable the input block
-        typedValueElement.style.display = 'block';
-        typedValueElement.disabled = false;
-
-        // Clear any prior messages
-        messageElement.innerText = '';
-
-        // Setup the textbox
-        // Clear the textbox
-        typedValueElement.value = '';
-        // set focus
-        typedValueElement.focus();
-        // set the event handler
-        typedValueElement.className = ''
-
-        // Start the timer
         startTime = new Date().getTime();
     });
 
     typedValueElement.addEventListener('input', () => {
-        // Get the current word
         const currentWord = words[wordIndex];
-        // get the current value
         const typedValue = typedValueElement.value;
 
-        // end of sentence
-        if (typedValue === currentWord && wordIndex === words.length - 1) {
+        const typedLastWord = typedValue === currentWord && wordIndex === words.length - 1
+        const finishedTypingWord = typedValue.endsWith(' ') && typedValue.trim() === currentWord
+        const correctTyping = currentWord.startsWith(typedValue)
 
-            // Display success
-            elapsedTime = (new Date().getTime() - startTime) / 1000;
-            let message = `You finished in ${elapsedTime} seconds.`;
-            storageQuote = 'maxScoreForQuoteLength-' + quoteLenght;
+        if (typedLastWord) {
+            const elapsedTime = new Date().getTime() - startTime
+            const elapsedTimeInSec = elapsedTime / 1000;
+
+            let message = `You finished in ${elapsedTimeInSec} seconds.`;
+            let storageQuote = 'maxScoreForQuoteLength-' + quoteLenght;
+
             typedValueElement.disabled = true;
-            savedMaxScore = localStorage.getItem(storageQuote);
 
-            // collect max score in local storage
-            if (!localStorage.getItem(storageQuote)) {
-                // populate storage
-                populateLocalStorage(storageQuote, elapsedTime);
-            }
-            else if (savedMaxScore > elapsedTime) {
-                // update storage
-                populateLocalStorage(storageQuote, elapsedTime);
+            if (overridesPreviousTime(storageQuote, elapsedTimeInSec)) {
                 message = message + '\n You recorded the MAX score!';
-            };
+            }
+
             messageElement.innerText = message;
 
             // Modal box for congratulations
-            // Open modal box
             modal.style.display = 'block';
 
-        } else if (typedValue.endsWith(' ') && typedValue.trim() === currentWord) {
-            // end of word
-            // clear the typedValueElement for the next word
-            typedValueElement.value = '';
-            // move to the next word
+        } else if (finishedTypingWord) {
+            clearTypedValue();
             wordIndex++;
-            // reset the class name for all elements in quote
             for (const wordElement of quoteElement.childNodes) {
                 wordElement.className = '';
             }
-            // highlight the new word
-            quoteElement.childNodes[wordIndex].className = 'highlight';
-        } else if (currentWord.startsWith(typedValue)) {
-            // currently correct
-            // highlight the next word
-            typedValueElement.className = '';
+            highlightWord(wordIndex);
+
+        } else if (correctTyping) {
+            clearClass();
         } else {
-            // error state
-            typedValueElement.className = 'error';
+            setErrorClass();
         }
     });
 
     closeBtn.onclick = closeModal;
 
-    // When the user clicks on <span> (x), close the modal
-    function closeModal() {
-        modal.style.display = 'none';
-        typedValueElement.style.display = 'none';
-        startGame.focus();
-    };
-
-    // When the user clicks anywhere outside of the modal, close it
+    // When the user clicks anywhere outside of the modal content, close it
     window.onclick = function (event) {
         if (event.target == modal) {
             closeModal();
@@ -147,4 +92,53 @@
             closeModal();
         }
     });
+
+    function pickRandom(array) {
+        const randomIndex = Math.floor(Math.random() * array.length);
+        return array[randomIndex]
+    }
+
+    function spanWords(words) {
+        return words.map((word) => `<span>${word} </span>`).join('');
+    }
+
+    function overridesPreviousTime(storageQuote, elapsedTimeInSec) {
+        const previousTime = localStorage.getItem(storageQuote)
+        if (!previousTime || previousTime > elapsedTimeInSec) {
+            localStorage.setItem(storageQuote, elapsedTimeInSec)
+            return true
+        }
+        return false
+    }
+
+    function prepareInputBoxForTyping() {
+        typedValueElement.style.display = 'block';
+        typedValueElement.disabled = false;
+        messageElement.innerText = '';
+        clearTypedValue();
+        typedValueElement.focus();
+        clearClass();
+    }
+
+    function highlightWord(i) {
+        quoteElement.childNodes[i].className = 'highlight'
+    }
+
+    function clearTypedValue() {
+        typedValueElement.value = ''
+    }
+
+    function clearClass() {
+        typedValueElement.className = ''
+    }
+
+    function setErrorClass() {
+        typedValueElement.className = 'error'
+    }
+
+    function closeModal() {
+        modal.style.display = 'none';
+        typedValueElement.style.display = 'none';
+        startGame.focus();
+    };
 })()

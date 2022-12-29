@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -8,28 +9,26 @@
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
+
 <body>
   <h1>Typing game!</h1>
   <p>Practice your typing skills with a quote from Sherlock Holmes. Click **<b>start</b>** to begin!</p>
-  <p id="quote"></p> <!-- This will display our quote -->
-  <!-- <p id="message"></p> This will display any status messages -->
+  <p id="quote"></p>
 
   <div id="input-form">
-    <input tabindex = "0" type="text" aria-label="current word" id="typed-value" /> <!-- The textbox for typing -->
-    <button tabindex = "0" autofocus type="button" id="start"><b>Start</b></button> <!-- To start the game -->
+    <input tabindex="0" type="text" aria-label="current word" id="typed-value" />
+    <button tabindex="0" autofocus type="button" id="start"><b>Start</b></button>
   </div>
-
-    <!-- The Modal -->
-    <div id="modalBox" class="modal">
-      <!-- Modal content -->
-      <div class="modal-content">
-      <div class = "modal-header">
+  <div id="modalBox" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
         <span class="close">&times;</span>
         <h2>CONGRATULATIONS!</h2>
       </div>
-      <div class = "modal-body">
-        <p id="message"></p> <!-- This will display any status messages -->
-      </div> 
+      <div class="modal-body">
+        <p id="message"></p>
+      </div>
     </div>
 </body>
+
 </html>

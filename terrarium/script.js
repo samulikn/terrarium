@@ -5,11 +5,6 @@ const page = document.getElementById('page');
 let width = 0;
 let height = 0;
 
-function getPageSize() {
-    width = page.offsetWidth;
-    height = page.offsetHeight;
-};
-
 getPageSize();
 
 window.onresize = getPageSize;
@@ -51,8 +46,8 @@ function addDraggingHandler(terrariumElement) {
         relX = absX - x;
 
         const isGoingOutsideRight = relX < 0 && (boundingRect.right - relX) > width;
-        const isGoingOutsiLeft = relX > 0 && (boundingRect.left - relX) < 0
-        if (isGoingOutsideRight || isGoingOutsiLeft) {
+        const isGoingOutsideLeft = relX > 0 && (boundingRect.left - relX) < 0
+        if (isGoingOutsideRight || isGoingOutsideLeft) {
             relX = 0;
         }
         else {
@@ -69,8 +64,12 @@ function addDraggingHandler(terrariumElement) {
     terrariumElement.onpointerdown = pointerDrag;
 };
 
+function getPageSize() {
+    width = page.offsetWidth;
+    height = page.offsetHeight;
+};
+
 // function to get z-index
-let plant = -1;
 function getZindex(plant) {
     return window.getComputedStyle(plant).getPropertyValue("z-index");
 };
