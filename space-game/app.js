@@ -1,8 +1,8 @@
 let gameLoopId;
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d')
-const canvasHeight = canvas.height;
-const canvasWidth = canvas.width;
+const cnvsHeight = canvas.height;
+const cnvsWidth = canvas.width;
 const totalMeteors = 3;
 
 class EventEmitter {
@@ -113,8 +113,8 @@ class Enemy extends GameObject {
     if (frameId % RATE) return;
 
     if (!this.dead) {
-      this.y = this.y < canvasHeight - this.height ? this.y += 5 : this.y;
-      if (this.y >= canvasHeight - this.height) {
+      this.y = this.y < cnvsHeight - this.height ? this.y += 5 : this.y;
+      if (this.y >= cnvsHeight - this.height) {
         this.dead = true;
         eventEmitter.emit(Messages.ENEMY_OUT_OF_BOUNDS);
       }
@@ -144,8 +144,8 @@ class Meteor extends GameObject {
       this.y += Math.abs(Math.cos(this.angle)) * this.speed;
       this.x += Math.sin(this.angle) * this.speed;
 
-      if (this.y >= canvasHeight ||
-        this.x >= canvasWidth ||
+      if (this.y >= cnvsHeight ||
+        this.x >= cnvsWidth ||
         this.x < 0) {
         this.dead = true;
       }
@@ -257,12 +257,12 @@ function drawGameObjects(ctx) {
 }
 
 function drawLife() {
-  const START_POS = canvasWidth - 180;
+  const START_POS = cnvsWidth - 180;
   for (let i = 0; i < hero.life; i++) {
     ctx.drawImage(
       lifeImg,
       START_POS + (45 * (i + 1)),
-      canvasHeight - 37);
+      cnvsHeight - 37);
   }
 }
 
@@ -270,7 +270,7 @@ function drawPoints() {
   ctx.font = "30px Arial";
   ctx.fillStyle = "red";
   ctx.textAlign = "left";
-  drawText("Points: " + hero.points, 10, canvasHeight - 20);
+  drawText("Points: " + hero.points, 10, cnvsHeight - 20);
 }
 
 function drawText(message, x, y) {
@@ -281,7 +281,7 @@ function displayMessage(message, color = "red") {
   ctx.font = "30px Arial";
   ctx.fillStyle = color;
   ctx.textAlign = "center";
-  ctx.fillText(message, canvasWidth / 2, canvasHeight / 2);
+  ctx.fillText(message, cnvsWidth / 2, cnvsHeight / 2);
 }
 
 function pickRandom(arr) {
@@ -317,9 +317,9 @@ function endGame(win) {
 
     //  set a delay so we are sure any paints have finished
     setTimeout(() => {
-      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      ctx.clearRect(0, 0, cnvsWidth, cnvsHeight);
       ctx.fillStyle = "black";
-      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+      ctx.fillRect(0, 0, cnvsWidth, cnvsHeight);
 
       if (win) {
         displayMessage(
@@ -341,7 +341,7 @@ function endGame(win) {
 function createEnemies() {
   const ENEMY_TOTAL = 5;
   const ENEMY_WIDTH = ENEMY_TOTAL * 98;
-  const START_X = (canvasWidth - ENEMY_WIDTH) / 2;
+  const START_X = (cnvsWidth - ENEMY_WIDTH) / 2;
   const STOP_X = START_X + ENEMY_WIDTH;
 
   for (let x = START_X; x < STOP_X; x += 98) {
@@ -355,8 +355,8 @@ function createEnemies() {
 
 function createHero() {
   hero = new Hero(
-    canvasWidth / 2 - 45,
-    canvasHeight - canvasHeight / 4
+    cnvsWidth / 2 - 45,
+    cnvsHeight - cnvsHeight / 4
   );
   hero.img = heroImg;
   gameObjects.push(hero);
@@ -374,10 +374,10 @@ function createMeteors() {
 }
 
 function createMeteor() {
-  let x = Math.floor(Math.random() * canvasWidth)
+  let x = Math.floor(Math.random() * cnvsWidth)
   let y = 0
 
-  let multiplier = (x <= canvasWidth / 2) ? 1 : -1
+  let multiplier = (x <= cnvsWidth / 2) ? 1 : -1
   let angle = Math.random() * 30 * multiplier
   let speed = Math.random() * 100 + 15
   let img = pickRandom(meteorImages)
@@ -554,9 +554,9 @@ function runGame() {
 
   gameLoopId = setInterval(() => {
 
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    ctx.clearRect(0, 0, cnvsWidth, cnvsHeight);
     ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+    ctx.fillRect(0, 0, cnvsWidth, cnvsHeight);
 
     drawPoints();
     drawLife();
