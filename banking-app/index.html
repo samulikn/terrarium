@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank App</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="./app.js" defer></script>
+</head>
+
+<body>
+    <div id="app">Loading...</div>
+
+    <template id="login">
+        <div class="title-logo">
+            <img src="./logo/wheat.png" alt="logo">
+            <h1>Bank App</h1>
+        </div>
+
+        <div class="login-page-content">
+            <!-- <a href="/dashboard" onclick="onLinkClick(event)">Login</a> -->
+            <section>
+                <h2>Login</h2>
+                <form id="loginForm" action="javascript:login()">
+                    <label for="username">Username <span>(required)</span></label>
+                    <input id="username" name="username" type="text" maxlength="20" required>
+                    <div class="errorMessage" id="loginError" role="alert"></div>
+                    <button>Login</button>
+                </form>
+                <hr />
+                <h2>Register</h2>
+                <form id="registerForm" action="javascript:register()">
+                    <label for="user">Username <span>(required)</span></label>
+                    <input id="user" name="user" type="text" tabindex="0" maxlength="20" required>
+                    <label for="currency">Currency <span>(required)</span></label>
+                    <select name="currency" id="currency" value="EUR">
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR" selected>EUR (&euro;)</option>
+                        <option value="UAN">UAN (&#8372;)</option>
+                    </select>
+                    <label for="description">Description</label>
+                    <input id="description" name="description" type="text" maxlength="100">
+                    <label for="balance">Current balance</label>
+                    <input id="balance" name="balance" type="number" value="0">
+                    <div class="errorMessage" id="registerError" role="alert"></div>
+                    <button>Register</button>
+                </form>
+            </section>
+        </div>
+    </template>
+
+    <template id="dashboard">
+        <header>
+            <div class="logo-header">
+                <img src="./logo/wheat.png" alt="logo">
+                <h1>Bank App</h1>
+                <a id="credit" href="/limit" onclick="onLinkClick(event)">Credit</a>
+                <a id="logout" href="/login" onclick="onLinkClick(event)">Logout</a>
+            </div>
+        </header>
+        <div class="balance-details">
+            Balance: <span id="balance"></span> <span id="currency"></span>
+            <h2 id="description"></h2>
+        </div>
+        <div class="account-transactions">
+            <h2>Transactions</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Object</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="transactions"></tbody>
+                <!-- <tr>
+                    <td>04-09-2021</td>
+                    <td>Cash</td>
+                    <td>239</td>
+                </tr>
+                <tr>
+                    <td>14-09-2021</td>
+                    <td>grocerilksjfesihrufhe iehffi ajwhelfies</td>
+                    <td>176</td>
+                </tr> -->
+            </table>
+        </div>
+    </template>
+
+    <template id="transaction">
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </template>
+
+    <template id="limit">
+        <header>
+            <div class="logo-header">
+                <img src="./logo/wheat.png" alt="logo">
+                <h1>Bank App</h1>
+                <a id="details" href="/dashboard" onclick="onLinkClick(event)">Balance</a>
+                <a id="logout" href="/login" onclick="onLinkClick(event)">Logout</a>
+            </div>
+        </header>
+        <hr>
+        <div class="limit-page-content">
+            <form id="dailyLimit" action="javascript:saveLimit()">
+                <div class="credit-value">
+                    <label for="creditLimit">Limit value: </label>
+                    <input id="limit" type="number" name="limitAmount" value=100> <span id="limitcurrency"></span>
+                </div>
+                <span id="attention">This limit applies to all payments made from your account.</span>
+                <button>Save</button>
+            </form>
+        </div>
+    </template>
+
+</body>
+
+</html>
