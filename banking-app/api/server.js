@@ -20,6 +20,7 @@ const db = {
       { id: '2', date: '2020-10-03', object: 'Book', amount: -10 },
       { id: '3', date: '2020-10-04', object: 'Sandwich', amount: -5 }
     ],
+    limitAmount: 100,
   }
 };
 
@@ -27,7 +28,7 @@ const db = {
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors({ origin: /http:\/\/(127(\.\d){3}|localhost)/}));
+app.use(cors({ origin: /http:\/\/(127(\.\d){3}|localhost)/ }));
 app.options('*', cors());
 
 // ***************************************************************************
@@ -59,7 +60,7 @@ router.post('/accounts', (req, res) => {
   if (balance && typeof balance !== 'number') {
     balance = parseFloat(balance);
     if (isNaN(balance)) {
-      return res.status(400).json({ error: 'Balance must be a number' });  
+      return res.status(400).json({ error: 'Balance must be a number' });
     }
   }
 
@@ -70,10 +71,45 @@ router.post('/accounts', (req, res) => {
     description: req.body.description || `${req.body.user}'s budget`,
     balance: balance || 0,
     transactions: [],
+    limitAmount: 100,
   };
   db[req.body.user] = account;
 
   return res.status(201).json(account);
+});
+
+//---------------------------------------------------------
+// Add limit for transaction
+router.patch('/accounts/:user', (req, res) => {
+  // Check mandatory request parameters
+  if (req.body.limitAmount == undefined) {
+    return res.status(400).json({ error: 'Missing parameters' });
+  }
+
+  // Convert limitAmount to number if needed
+  let limit = req.body.limitAmount;
+  if (limit && typeof limit !== 'number') {
+    limit = parseInt(limit);
+    if (isNaN(limit)) {
+      return res.status(400).json({ error: 'limitAmount must be a number' });
+    }
+  }
+
+  // Check if limit is a positive value
+  if (req.body.limitAmount < 0) { 
+    return res.status(400).json({ error: 'Limit value must be a positive' });
+  }
+
+  // Check if account already exists
+  if (!db[req.params.user]) {
+    return res.status(404).json({ error: "User doesn't exists" });
+  }
+
+  const account = db[req.params.user];
+
+  account.limitAmount = limit;
+
+  return res.status(200).json(account);
 });
 
 // ----------------------------------------------
@@ -132,6 +168,16 @@ router.post('/accounts/:user/transactions', (req, res) => {
   // Check that amount is a valid number
   if (amount && isNaN(amount)) {
     return res.status(400).json({ error: 'Amount must be a number' });
+  }
+
+  // Check the amount of transaction if it doesn't exceed the limit
+  if (amount < 0 && Math.abs(amount) > account.limitAmount) { 
+    return res.status(400).json({ error: 'Amount exceeded the limit' });
+  }
+
+  // Check if you have enough money on your balance
+  if (amount < 0 && (account.balance + amount) < 0) { 
+    return res.status(400).json({ error: 'You do not have enough money on your account' });
   }
 
   // Generates an ID for the transaction

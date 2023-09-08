@@ -26,7 +26,9 @@
                     <label for="username">Username <span>(required)</span></label>
                     <input id="username" name="username" type="text" maxlength="20" required>
                     <div class="errorMessage" id="loginError" role="alert"></div>
-                    <button>Login</button>
+                    <div class="button">
+                        <button>Login</button>
+                    </div>
                 </form>
                 <hr />
                 <h2>Register</h2>
@@ -44,19 +46,23 @@
                     <label for="balance">Current balance</label>
                     <input id="balance" name="balance" type="number" value="0">
                     <div class="errorMessage" id="registerError" role="alert"></div>
-                    <button>Register</button>
+                    <div class="button">
+                        <button>Register</button>
+                    </div>
                 </form>
             </section>
         </div>
     </template>
 
+    <!-- Dashboard page -->
     <template id="dashboard">
+        <section class="dashboard">
         <header>
             <div class="logo-header">
                 <img src="./logo/wheat.png" alt="logo">
                 <h1>Bank App</h1>
                 <a id="credit" href="/limit" onclick="onLinkClick(event)">Credit</a>
-                <a id="logout" href="/login" onclick="onLinkClick(event)">Logout</a>
+                <a id="logoutDashboard" href="/login" onclick="onLinkClick(event)">Logout</a>
             </div>
         </header>
         <div class="balance-details">
@@ -65,6 +71,7 @@
         </div>
         <div class="account-transactions">
             <h2>Transactions</h2>
+            <button id="showTransactionDialog" onclick="onClickEvent(event)">Add transaction</button>
             <table>
                 <thead>
                     <tr>
@@ -86,14 +93,35 @@
                 </tr> -->
             </table>
         </div>
+        </section>
+        <section tabindex="-1" id="transactionDialog" class="dialog">
+            <!-- <dialog id="transactionDialog"> -->
+                <div id="dialogHeader">
+                    <h2>Add transaction:</h2>
+                </div>
+                    <form id="transactionDetails">
+                        <label for="transactionDate">Date</label>
+                        <input id="transactionDate" name="date" type="date">
+                        <label for="transactionObject">Object</label>
+                        <input id="transactionObject" name="object" type="text" maxlength="50">
+                        <label for="transactionAmount">Amount <span>(Use negative value for debit)</span></label> 
+                        <input id="transactionAmount" name="amount" type="number">
+                        <div class="errorMessage" id="transactionError" role="alert"></div>
+                        <div class="button">
+                            <button id="closeTransactionDialog" onclick="onClickEvent(event)">Cancel</button>
+                            <button id="sendTransaction" onclick="onClickEvent(event)">Ok</button>
+                        </div>
+                    </form>
+            <!-- </dialog> -->
+        </section>
     </template>
 
     <template id="transaction">
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
     </template>
 
     <template id="limit">
@@ -102,18 +130,24 @@
                 <img src="./logo/wheat.png" alt="logo">
                 <h1>Bank App</h1>
                 <a id="details" href="/dashboard" onclick="onLinkClick(event)">Balance</a>
-                <a id="logout" href="/login" onclick="onLinkClick(event)">Logout</a>
+                <a id="logoutLimit" href="/login" onclick="onLinkClick(event)">Logout</a>
             </div>
         </header>
         <hr>
         <div class="limit-page-content">
             <form id="dailyLimit" action="javascript:saveLimit()">
+                <div class="prevLimit">
+                    Current limit: <span id="prevLimit"></span> <span id="prevLimitCurrency"></span>
+                </div>
                 <div class="credit-value">
-                    <label for="creditLimit">Limit value: </label>
-                    <input id="limit" type="number" name="limitAmount" value=100> <span id="limitcurrency"></span>
+                    <label for="limitAmount">New limit value: </label>
+                    <input id="limitAmount" type="number" name="limitAmount" value=100> <span id="limitCurrency"></span>
                 </div>
                 <span id="attention">This limit applies to all payments made from your account.</span>
-                <button>Save</button>
+                <div class="errorMessage" id="creditError" role="alert"></div>
+                <div class="button">
+                    <button>Save</button>
+                </div>
             </form>
         </div>
     </template>

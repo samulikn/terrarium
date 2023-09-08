@@ -4,13 +4,19 @@
     padding: 0;
 }
 
+:root {
+    --transparentgray: rgba(0, 0, 0, 0.4);
+    --lightblue: rgb(210, 228, 247);
+    --blue: rgb(142, 192, 236);
+}
+
 html,
 body {
     font-family: Arial, Helvetica, sans-serif;
     padding: 0;
     margin: 0;
     max-height: 100%;
-    background-color: rgb(210, 228, 247);
+    background-color: var(--lightblue);
 }
 
 #dashboard {
@@ -38,12 +44,12 @@ h1 {
 
 h2 {
     padding-top: 20px;
-    margin-bottom: 10px;
+    margin: 0 10px 10px 10px;
     font-weight: 600;
     color: black;
 }
 
-.login-page-content span, #attention {
+.login-page-content span, #attention, .dialog span {
     color: grey;
 }
 
@@ -71,8 +77,9 @@ button {
     margin-bottom: 10px;
     padding: 5px;
     font-size: 16px;
-    background-color: rgb(142, 192, 236);
+    background-color: var(--blue);
     border-radius: 0.3rem;
+    width: 130px;
 }
 
 input,
@@ -101,7 +108,7 @@ select {
     
 }
 
-#logout, #credit, #details {
+#logoutDashboard, #logoutLimit, #credit, #details {
     padding: 10px;
     margin: 5px;
     border-radius: 0.3rem;
@@ -122,6 +129,12 @@ select {
 .account-transactions {
     padding: 10px 10px 0 10px;
     text-align: left;
+}
+
+.account-transactions button {
+    position: absolute;
+    margin-top: -40px;
+    right: 10px;
 }
 
 table {
@@ -168,8 +181,38 @@ td {
 
 }
 
+.dialog {
+    display: none;
+    position: absolute;
+    padding: 5px;
+    top: 25%;
+    left: 20%;
+    border-radius: 0.5rem;
+    border-color: white;
+    background-color: var(--blue);
+    max-width: 480px;
+    max-height: 100%;
+    z-index: 1002;
+}
+
+
+/* #dialogheader {
+    cursor: move;
+} */
+
+.button {
+    align-self: center;
+}
+
+.prevLimit {
+    font-weight: 600;
+    font-size: 20px;
+    text-align: center;
+}
+
 .errorMessage {
     color: red;
+    flex-grow: 2;
 }
 
 input:focus,
