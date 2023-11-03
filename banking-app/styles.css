@@ -204,6 +204,10 @@ td {
     align-self: center;
 }
 
+/* #closeTransactionDialog {
+    z-index: -1;
+} */
+
 .prevLimit {
     font-weight: 600;
     font-size: 20px;
@@ -216,7 +220,8 @@ td {
 }
 
 input:focus,
-select:focus {
+select:focus,
+button:focus {
     border-color: #00ea5a;
     outline: 0;
 }
@@ -226,7 +231,7 @@ button:hover {
     cursor: pointer;
 }
 
-button:focus {
+/* button:focus {
     outline: none;
     border: 3px solid var(--grey);
-}
+} */

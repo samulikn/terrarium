@@ -81,21 +81,10 @@
                     </tr>
                 </thead>
                 <tbody id="transactions"></tbody>
-                <!-- <tr>
-                    <td>04-09-2021</td>
-                    <td>Cash</td>
-                    <td>239</td>
-                </tr>
-                <tr>
-                    <td>14-09-2021</td>
-                    <td>grocerilksjfesihrufhe iehffi ajwhelfies</td>
-                    <td>176</td>
-                </tr> -->
             </table>
         </div>
         </section>
-        <section tabindex="-1" id="transactionDialog" class="dialog">
-            <!-- <dialog id="transactionDialog"> -->
+        <section id="transactionDialog" class="dialog">
                 <div id="dialogHeader">
                     <h2>Add transaction:</h2>
                 </div>
@@ -108,11 +97,11 @@
                         <input id="transactionAmount" name="amount" type="number">
                         <div class="errorMessage" id="transactionError" role="alert"></div>
                         <div class="button">
-                            <button id="closeTransactionDialog" onclick="onClickEvent(event)">Cancel</button>
-                            <button id="sendTransaction" onclick="onClickEvent(event)">Ok</button>
+                            <button id="closeTransactionDialog" type="reset" onclick="onClickEvent(event)">Cancel</button>
+                            <button id="sendTransaction" type="submit" onclick="onClickEvent(event)">Ok</button>
+                            <button id="closeTD" onclick="closeTransactionDialog()">Reset</button>
                         </div>
                     </form>
-            <!-- </dialog> -->
         </section>
     </template>
 
@@ -135,7 +124,7 @@
         </header>
         <hr>
         <div class="limit-page-content">
-            <form id="dailyLimit" action="javascript:saveLimit()">
+            <form id="dailyLimit" action="javascript:limit()">
                 <div class="prevLimit">
                     Current limit: <span id="prevLimit"></span> <span id="prevLimitCurrency"></span>
                 </div>
@@ -146,7 +135,7 @@
                 <span id="attention">This limit applies to all payments made from your account.</span>
                 <div class="errorMessage" id="creditError" role="alert"></div>
                 <div class="button">
-                    <button>Save</button>
+                    <button type="submit">Save</button>
                 </div>
             </form>
         </div>

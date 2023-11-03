@@ -1,8 +1,10 @@
+//***** Constants *****/
+const storageKey = 'savedAccount';
+const API_ROOT = "//localhost:5000/api";
+
 let state = Object.freeze({
     account: null
 });
-const storageKey = 'savedAccount';
-const API_ROOT = "//localhost:5000/api";
 
 let height = 0;
 let width = 0;
@@ -12,14 +14,15 @@ const routes = {
     '/dashboard': { templateId: 'dashboard', init: refreshDashboard },
     '/limit': { templateId: 'limit', init: refreshCredit }
 };
+//**********/
 
-
+//***** Routes *****/
 function updateRoute() {
     const path = window.location.pathname;
     const route = routes[path];
 
     if (!route) {
-        return navigate('/dashboard');
+        return navigate('/login');
     }
  
     const template = document.getElementById(route.templateId);
@@ -28,7 +31,7 @@ function updateRoute() {
     const app = document.getElementById('app');
     app.innerHTML = '';
     app.appendChild(view);
-    document.title = 'Bank App ' + template.id;
+    document.title = 'Bank App ' + route.templateId;
 
     if (typeof route.init === 'function') {
         route.init();
@@ -45,31 +48,19 @@ function onLinkClick(event) {
     navigate(event.target.href);
 }
 
-async function register() {
-    const registerForm = document.getElementById('registerForm');
-    const formData = new FormData(registerForm);
-    const data = Object.fromEntries(formData);
-    const jsonData = JSON.stringify(data);
-
-    const result = await createAccount(jsonData);
-
-    if (result.error) {
-        return updateElement('registerError', result.error);
-    }
-
-    // console.log('Account created!', result);
-
-    updateState('account', result);
-
-    navigate('/dashboard');
+function logout() {
+    updateState('account', null);
+    navigate('/login');
 }
+//**********/
 
-async function createAccount(account) {
+//***** API's *****/
+async function sendRequest(api, method, body) {
     try {
-        const response = await fetch(`${API_ROOT}/accounts`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: account
+        const response = await fetch(API_ROOT + api, {
+            method: method || 'GET',
+            headers: body ? { 'Content-Type': 'application/json' } : undefined,
+            body: body
         });
         return await response.json();
     } catch (error) {
@@ -77,27 +68,194 @@ async function createAccount(account) {
     }
 }
 
-async function login() {
-    const loginForm = document.getElementById('loginForm')
-    const user = loginForm.username.value;
-    const data = await getAccount(user);
+async function createAccount(account) {
+    return sendRequest('/accounts', 'POST', account);
+}
 
-    if (data.error) {
-        return updateElement('loginError', data.error);
+async function getAccount(user) {
+    return sendRequest('/accounts/' + encodeURIComponent(user));
+}
+
+async function addTransaction(user, transactionData) {
+    return sendRequest('/accounts/' + encodeURIComponent(user) + '/transactions', 'POST', transactionData);
+}
+
+async function updateLimit(user) {
+    const limit = dailyLimit.limitAmount.value;
+    const jsonLimitData = JSON.stringify({ "limitAmount": limit });
+
+    return sendRequest('/accounts/' + encodeURIComponent(user), 'PATCH', jsonLimitData);
+}
+//**********/
+
+//***** Register/Login page *****/
+async function register() {
+    const registerForm = document.getElementById('registerForm');
+    const formData = new FormData(registerForm);
+    const data = Object.fromEntries(formData);
+    const jsonData = JSON.stringify(data);
+
+    const accountData = await createAccount(jsonData);
+
+    if (accountData.error) {
+        return updateElement('registerError', accountData.error);
     }
 
-    updateState('account', data);
+    updateState('account', accountData);
 
     navigate('/dashboard');
 }
 
-async function getAccount(user) {
-    try {
-        const response = await fetch(`${API_ROOT}/accounts/` + encodeURIComponent(user));
-        return await response.json();
-    } catch (error) {
-        return { error: error.message || 'Unknown error' };
+async function login() {
+    const loginForm = document.getElementById('loginForm')
+    const user = loginForm.username.value;
+    const accountData = await getAccount(user);
+
+    if (accountData.error) {
+        return updateElement('loginError', accountData.error);
     }
+
+    updateState('account', accountData);
+
+    navigate('/dashboard');
+}
+//**********/
+
+//***** Needs to rewrite*/
+function onClickEvent(event) { 
+    event.preventDefault();
+
+    const transactionForm = document.getElementById('transactionDialog');
+    const showTransactionForm = document.getElementById('showTransactionDialog');
+    const cancelTransaction = document.getElementById('closeTransactionDialog');
+    const saveTransaction = document.getElementById('sendTransaction');
+
+    const transactionDate = document.getElementById('transactionDate');
+
+    if (event.target == cancelTransaction) {
+        closeTransactionDialog();
+    }
+    
+    if (event.target == showTransactionForm) {
+        
+        transactionForm.style.display = 'block';
+        transactionDate.focus();
+    }
+    
+    if (event.target == saveTransaction) { 
+        transactions();
+    }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.code == 'Escape') {
+            closeTransactionDialog();
+        }
+    });
+      
+}
+
+function showTransactionForm() { 
+    console.log('Im here')
+    const transactionForm = document.getElementById('transactionDialog');
+    const transactionDate = document.getElementById('transactionDate');
+    transactionForm.style.display = 'block';
+    transactionDate.focus();
+}
+//**********/
+
+//***** Dashboard *****/
+async function refreshDashboard() {
+    await updateAccountData();
+    updateDashboard();
+
+}
+
+function createTransactionRow(transaction) {
+    const template = document.getElementById('transaction');
+    const transactionRow = template.content.cloneNode(true);
+    const tr = transactionRow.querySelector('tr');
+    tr.children[0].textContent = transaction.date;
+    tr.children[1].textContent = transaction.object;
+    tr.children[2].textContent = transaction.amount.toFixed(2);
+    return transactionRow;
+}
+
+async function transactions() {
+    const transactionForm = document.getElementById('transactionDetails');
+    const formData = new FormData(transactionForm);
+    const data = Object.fromEntries(formData);
+    const jsonData = JSON.stringify(data);
+
+    const user = state.account.user;
+    const result = await addTransaction(user, jsonData);
+
+    if (result.error) {
+        return updateElement('transactionError', result.error);
+    }
+
+    closeTransactionDialog(transactionForm);
+
+    const accountData = await getAccount(user);
+
+    updateElement('balance', accountData.balance.toFixed(2));
+    
+    const transactionsRows = document.createDocumentFragment();
+    for (const transaction of accountData.transactions) {
+        const transactionRow = createTransactionRow(transaction);
+        transactionsRows.appendChild(transactionRow);
+    }
+    updateElement('transactions', transactionsRows);
+}
+
+function closeTransactionDialog() {
+    const modal = document.getElementById('transactionDialog');
+    updateElement('transactionError', '');
+    modal.style.display = 'none';
+} 
+//**********/ 
+
+//***** Credit *****/
+async function limit() {
+    const user = state.account.user;
+    const accountData = await updateLimit(user);
+
+    if (accountData.error) {
+        return updateElement('creditError', accountData.error);
+    }
+
+    updateState('account', accountData);
+
+    updateElement('prevLimit', accountData.limitAmount);
+}
+
+async function refreshCredit() {
+    await updateAccountData();
+    updateCredit();
+}
+//**********/
+
+//***** Update elements/account data */
+async function updateAccountData() {
+    const account = state.account;
+    if (!account) {
+        return logout();
+    }
+
+    const data = await getAccount(account.user);
+    if (data.error) {
+        return logout();
+    }
+
+    updateState('account', data);
+}
+
+function updateState(property, newData) {
+    state = Object.freeze({
+        ...state,
+        [property]: newData
+    });
+
+    localStorage.setItem(storageKey, JSON.stringify(state.account));
 }
 
 function updateElement(id, textOrNode) {
@@ -126,111 +284,35 @@ function updateDashboard() {
 
     const dialogBox = document.getElementById('transactionDialog');
     const dialogHeader = document.getElementById('dialogHeader');
- 
+
     getPageSize();
-    
+
     DraggingHandler(dialogHeader, dialogBox);
-    
-    function getPageSize() {
-        width = window.innerWidth;
-        height = window.innerHeight;
-    };
 }
 
-function onClickEvent(event) { 
-    event.preventDefault();
-
-    const transactionForm = document.getElementById('transactionDialog');
-    const showTransactionForm = document.getElementById('showTransactionDialog');
-    const cancelTransaction = document.getElementById('closeTransactionDialog');
-    const saveTransaction = document.getElementById('sendTransaction');
-
-    const transactionDate = document.getElementById('transactionDate');
-
-    if (event.target == cancelTransaction) {
-        closeTransactionDialog();
-    }
-    
-    if (event.target == showTransactionForm) {
-        
-        transactionForm.style.display = 'block';
-        transactionDate.focus();
-    }
-    
-    if (event.target == saveTransaction) { 
-        sendTransaction();
+function updateCredit() {
+    const account = state.account;
+    if (!account) {
+        return logout();
     }
 
-    document.addEventListener('keydown', (event) => {
-        if (event.code == 'Escape') {
-            closeTransactionDialog();
-        }
-    });
-      
-}
-
-function closeTransactionDialog() {
-    const modal = document.getElementById('transactionDialog');
-    updateElement('transactionError', '');
-    modal.style.display = 'none';
-} 
-
-function createTransactionRow(transaction) {
-    const template = document.getElementById('transaction');
-    const transactionRow = template.content.cloneNode(true);
-    const tr = transactionRow.querySelector('tr');
-    tr.children[0].textContent = transaction.date;
-    tr.children[1].textContent = transaction.object;
-    tr.children[2].textContent = transaction.amount.toFixed(2);
-    return transactionRow;
-}
-
-async function sendTransaction() {
-    const transactionForm = document.getElementById('transactionDetails');
-    const formData = new FormData(transactionForm);
-    const data = Object.fromEntries(formData);
-    const jsonData = JSON.stringify(data);
-
-    const user = state.account.user;
-    const result = await addTransaction(user, jsonData);
-
-    if (result.error) {
-        return updateElement('transactionError', result.error);
-    }
-
-    closeTransactionDialog(transactionForm);
-
-    const updatedData = await getAccount(user);
-
-    updateElement('balance', updatedData.balance.toFixed(2));
-    
-    const transactionsRows = document.createDocumentFragment();
-    for (const transaction of updatedData.transactions) {
-        const transactionRow = createTransactionRow(transaction);
-        transactionsRows.appendChild(transactionRow);
-    }
-    updateElement('transactions', transactionsRows);
-
+    updateElement('limitCurrency', account.currency);
+    updateElement('limitAmount', account.limitAmount);
+    updateElement('prevLimit', account.limitAmount);
+    updateElement('prevLimitCurrency', account.currency);
 
 }
- 
-async function addTransaction(user, transactionData) {
-    try { 
-        const response = await fetch(`${API_ROOT}/accounts/` + encodeURIComponent(user) + '/transactions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: transactionData
-        });
-        return await response.json();
-    } catch (error) {
-        return { error: error.message || 'Unknown error' };
-    }
-    // console.log(user, data)
-}
+//**********/
+
+//***** Drag/drop interface */
+function getPageSize() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+};
 
 function DraggingHandler(dialogHeader, dialogBox) {
     var relX = 0, relY = 0, absX = 0, absY = 0;
-    
+
     if (dialogHeader) {
         dialogHeader.onmousedown = pointerDrag;
     }
@@ -255,7 +337,7 @@ function DraggingHandler(dialogHeader, dialogBox) {
         relX = absX - x;
         relY = absY - y;
         absX = x;
-        
+
 
         const isGoingBelowBottom = relY < 0 && (boundingDialogbox.bottom - relY) > height;
         const isGoingAboveTop = relY > 0 && (boundingDialogbox.top - relY) < 0;
@@ -283,97 +365,13 @@ function DraggingHandler(dialogHeader, dialogBox) {
         document.onmousemove = null;
     }
 }
-
-function updateCredit() {
-    const account = state.account;
-    if (!account) {
-        return logout();
-    }
-
-    updateElement('limitCurrency', account.currency);
-    updateElement('limitAmount', account.limitAmount);
-    updateElement('prevLimit', account.limitAmount);
-    updateElement('prevLimitCurrency', account.currency);
-
-}
-
-async function saveLimit() {
-    const user = state.account.user;
-    const accountData = await modifyLimit(user);
-
-    if (accountData.error) {
-        return updateElement('creditError', accountData.error);
-    }
-
-    updateState('account', accountData);
-
-    updateElement('prevLimit', accountData.limitAmount);
-}
-
-async function modifyLimit(user) { 
-    const limit = dailyLimit.limitAmount.value;
-    try {
-        const response = await fetch(`${API_ROOT}/accounts/` + encodeURIComponent(user), {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ "limitAmount": limit })
-        });
-        return await response.json();
-    } catch (error) {
-        return { error: error.message || 'Unknown error' };
-
-    }
-}
-
-
- // save account data in local storage
-function updateState(property, newData) {
-    state = Object.freeze({
-        ...state,
-        [property]: newData
-    });
-
-    localStorage.setItem(storageKey, JSON.stringify(state.account));
-
-    //console.log(state)
-}
-
-function logout() {
-    updateState('account', null);
-    navigate('/login');
-}
-
-async function updateAccountData() {
-    const account = state.account;
-    if (!account) {
-        return logout();
-    }
-
-    const data = await getAccount(account.user);
-    if (data.error) {
-        return logout();
-    }
-
-    updateState('account', data);
-}
-
-async function refreshDashboard() {
-    await updateAccountData();
-    updateDashboard();
-
-}
-
-async function refreshCredit() {
-    await updateAccountData();
-    updateCredit();
-
-}
+//***********/
 
 function init() {
-    const savedAccountData = localStorage.getItem(storageKey);
-    // console.log(savedAccountData)
-    if (savedAccountData) {
-        updateState('account', JSON.parse(savedAccountData));
+    const savedState = localStorage.getItem(storageKey);
+
+    if (savedState) {
+        updateState('account', JSON.parse(savedState));
     }
 
     window.onpopstate = () => updateRoute();
