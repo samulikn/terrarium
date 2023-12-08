@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank App</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="./app.js" defer></script>
+</head>
+
+<body>
+    <div id="app">Loading...</div>
+
+    <template id="login">
+        <div class="title-logo">
+            <img src="./logo/wheat.png" alt="logo">
+            <h1>Bank App</h1>
+        </div>
+
+        <div class="login-page-content">
+            <!-- <a href="/dashboard" onclick="onLinkClick(event)">Login</a> -->
+            <section>
+                <h2>Login</h2>
+                <form id="loginForm" action="javascript:login()">
+                    <label for="username">Username <span>(required)</span></label>
+                    <input id="username" name="username" type="text" maxlength="20" required>
+                    <div class="errorMessage" id="loginError" role="alert"></div>
+                    <div class="button">
+                        <button>Login</button>
+                    </div>
+                </form>
+                <hr />
+                <h2>Register</h2>
+                <form id="registerForm" action="javascript:register()">
+                    <label for="user">Username <span>(required)</span></label>
+                    <input id="user" name="user" type="text" tabindex="0" maxlength="20" required>
+                    <label for="currency">Currency <span>(required)</span></label>
+                    <select name="currency" id="currency" value="EUR">
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR" selected>EUR (&euro;)</option>
+                        <option value="UAN">UAN (&#8372;)</option>
+                    </select>
+                    <label for="description">Description</label>
+                    <input id="description" name="description" type="text" maxlength="100">
+                    <label for="balance">Current balance</label>
+                    <input id="balance" name="balance" type="number" value="0">
+                    <div class="errorMessage" id="registerError" role="alert"></div>
+                    <div class="button">
+                        <button>Register</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </template>
+
+    <!-- Dashboard page -->
+    <template id="dashboard">
+        <section class="dashboard">
+        <header>
+            <div class="logo-header">
+                <img src="./logo/wheat.png" alt="logo">
+                <h1>Bank App</h1>
+                <a id="credit" href="/limit" onclick="onLinkClick(event)">Credit</a>
+                <a id="logoutDashboard" href="/login" onclick="onLinkClick(event)">Logout</a>
+            </div>
+        </header>
+        <div class="balance-details">
+            Balance: <span id="balance"></span> <span id="currency"></span>
+            <h2 id="description"></h2>
+        </div>
+        <div class="account-transactions">
+            <h2>Transactions</h2>
+            <button id="showTransactionDialog" onclick="onClickEvent(event)">Add transaction</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Object</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="transactions"></tbody>
+            </table>
+        </div>
+        </section>
+        <section id="transactionDialog" class="dialog">
+                <div id="dialogHeader">
+                    <h2>Add transaction:</h2>
+                </div>
+                    <form id="transactionDetails">
+                        <label for="transactionDate">Date</label>
+                        <input id="transactionDate" name="date" type="date">
+                        <label for="transactionObject">Object</label>
+                        <input id="transactionObject" name="object" type="text" maxlength="50">
+                        <label for="transactionAmount">Amount <span>(Use negative value for debit)</span></label> 
+                        <input id="transactionAmount" name="amount" type="number">
+                        <div class="errorMessage" id="transactionError" role="alert"></div>
+                        <div class="button">
+                            <button id="closeTransactionDialog" type="reset" onclick="onClickEvent(event)">Cancel</button>
+                            <button id="sendTransaction" type="submit" onclick="onClickEvent(event)">Ok</button>
+                            <button id="closeTD" onclick="closeTransactionDialog()">Reset</button>
+                        </div>
+                    </form>
+        </section>
+    </template>
+
+    <template id="transaction">
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+    </template>
+
+    <template id="limit">
+        <header>
+            <div class="logo-header">
+                <img src="./logo/wheat.png" alt="logo">
+                <h1>Bank App</h1>
+                <a id="details" href="/dashboard" onclick="onLinkClick(event)">Balance</a>
+                <a id="logoutLimit" href="/login" onclick="onLinkClick(event)">Logout</a>
+            </div>
+        </header>
+        <hr>
+        <div class="limit-page-content">
+            <form id="dailyLimit" action="javascript:limit()">
+                <div class="prevLimit">
+                    Current limit: <span id="prevLimit"></span> <span id="prevLimitCurrency"></span>
+                </div>
+                <div class="credit-value">
+                    <label for="limitAmount">New limit value: </label>
+                    <input id="limitAmount" type="number" name="limitAmount" value=100> <span id="limitCurrency"></span>
+                </div>
+                <span id="attention">This limit applies to all payments made from your account.</span>
+                <div class="errorMessage" id="creditError" role="alert"></div>
+                <div class="button">
+                    <button type="submit">Save</button>
+                </div>
+            </form>
+        </div>
+    </template>
+
+</body>
+
+</html>
