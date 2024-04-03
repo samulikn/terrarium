@@ -76,14 +76,13 @@ function getZindex(plant) {
 
 function setElementToFront(terrariumElement) {
     terrariumElement.addEventListener("dblclick", function () {
-        let maxZindex = Number.MIN_SAFE_INTEGER
+        let maxZindex = Number.MIN_SAFE_INTEGER;
         for (const i of plants) {
-            const z = getZindex(i);
+            const z = Number(getZindex(i));
             if (maxZindex < z) {
                 maxZindex = z;
             }
         }
-
         terrariumElement.style.zIndex = maxZindex + 1;
     });
 };
