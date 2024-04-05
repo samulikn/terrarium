@@ -4,4 +4,4 @@ Typing is one of the most underrated skills of the developer. The ability to qui
 
 ![Typing-game pict](https://github.com/samulikn/web-dev-for-beginners/blob/main/typing-game/images/typing-game.png)
 
-Play this game [Typing game](typing-game).
+Play this game [Typing game](https://samulikn.github.io/web-dev-for-beginners/typing-game/).
