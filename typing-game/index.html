@@ -12,12 +12,14 @@
 
 <body>
   <h1>Typing game!</h1>
-  <p>Practice your typing skills with a quote from Sherlock Holmes. Click **<b>start</b>** to begin!</p>
-  <p id="quote"></p>
+  <div class="game-content">
+    <p>Practice your typing skills with a quote from Sherlock Holmes.<br>Click **<b>start</b>** to begin!</p>
+    <p id="quote"></p>
 
-  <div id="input-form">
-    <input tabindex="0" type="text" aria-label="current word" id="typed-value" />
-    <button tabindex="0" autofocus type="button" id="start"><b>Start</b></button>
+    <div id="input-form">
+      <input tabindex="0" type="text" aria-label="current word" id="typed-value" />
+      <button tabindex="0" autofocus type="button" id="start"><b>Start</b></button>
+    </div>
   </div>
   <div id="modalBox" class="modal">
     <div class="modal-content">

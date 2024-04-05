@@ -9,22 +9,19 @@
   --lightcorral: lightcoral;
   --red: red;
   --black: black;
-  --gray: gray;
+  --darkgray: gray;
   --darkblue: darkblue;
   --darkred: darkred;
-  --lightslategray: rgb(223, 228, 234);
   --white: white;
   --lightgray: #aaa;
   --transparentgray: rgba(0, 0, 0, 0.4);
+  --grey: #eee;
 }
 
 html,
 body {
   font-family: Arial, Helvetica, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  row-gap: 1rem;
+  background-color: var(--grey);
 }
 
 .highlight {
@@ -40,17 +37,27 @@ body {
   color: var(--black);
   font-weight: 700;
   text-align: center;
-  line-height: 50px;
+  line-height: 2rem;
 
 }
 
 h1 {
-  padding-top: 40px;
+  margin: 4rem auto 2rem;
+  text-align: center;
   font-weight: 700;
   color: var(--black);
-  text-shadow: 2px 2px var(--gray);
+  text-shadow: 2px 2px var(--darkgray);
   text-transform: uppercase;
   font-family: sans-serif;
+}
+
+.game-content {
+  margin: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 1rem;
 }
 
 #input-form {
@@ -64,6 +71,7 @@ p {
   font-weight: 400;
   font-size: 18px;
   color: var(--darkblue);
+  text-align: justify;
 }
 
 #quote,
@@ -109,15 +117,19 @@ button:focus {
   position: relative;
   background-color: var(--white);
   margin: 15% auto;
-  padding: 20px;
-  border: 2px solid var(--gray);
+  padding: 1rem;
+  border: 2px solid var(--darkgray);
   width: 60%;
 }
 
 .modal-header {
   color: var(--darkred);
   text-align: center;
-  padding: 10px 16px;
+}
+
+h2 {
+  font-size: 5vw;
+  margin-top: 1rem;
 }
 
 .modal-body {
@@ -136,7 +148,8 @@ button:focus {
 }
 
 .close:hover,
-.close:focus {
+.close:focus,
+button:hover {
   color: var(--black);
   text-decoration: none;
   cursor: pointer;
