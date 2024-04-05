@@ -5,4 +5,4 @@ Would you like to put a choosen plant ahead of the others? - Double click on the
 
 ![Terrarium-pict](https://github.com/samulikn/web-dev-for-beginners/blob/main/terrarium/images/terrarium.png)
 
-Try this drag and drop code-meditation [Terrarium](index.html).
+Try this drag and drop code-meditation [Terrarium](https://samulikn.github.io/web-dev-for-beginners/terrarium/).
