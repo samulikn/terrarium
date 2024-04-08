@@ -257,31 +257,29 @@ function drawGameObjects(ctx) {
 }
 
 function drawLife() {
-  const START_POS = canvasWidth - 180;
+  const START_POS = canvasWidth - 215;
   for (let i = 0; i < hero.life; i++) {
     ctx.drawImage(
       lifeImg,
       START_POS + (45 * (i + 1)),
-      canvasHeight - 37);
+      canvasHeight - 49);
   }
 }
 
-function drawPoints() {
+function drawText(message, color, x, y) {
   ctx.font = "30px Arial";
-  ctx.fillStyle = "red";
-  ctx.textAlign = "left";
-  drawText("Points: " + hero.points, 10, canvasHeight - 20);
-}
-
-function drawText(message, x, y) {
+  ctx.fillStyle = color;
   ctx.fillText(message, x, y);
 }
 
+function drawPoints() {
+  ctx.textAlign = "left";
+  drawText("Points: " + hero.points, "green", 30, canvasHeight - 30);
+}
+
 function displayMessage(message, color = "red") {
-  ctx.font = "30px Arial";
-  ctx.fillStyle = color;
   ctx.textAlign = "center";
-  ctx.fillText(message, canvasWidth / 2, canvasHeight / 2);
+  drawText(message, color, canvasWidth / 2, canvasHeight / 2)
 }
 
 function pickRandom(arr) {
@@ -328,7 +326,7 @@ function endGame(win) {
         );
       } else {
         displayMessage(
-          "You died !!! Press [Enter] to start a new game Captain Pew Pew"
+          "You died!!! Press [Enter] to start a new game Captain Pew Pew"
         );
       }
 
@@ -379,7 +377,7 @@ function createMeteor() {
 
   let multiplier = (x <= canvasWidth / 2) ? 1 : -1
   let angle = Math.random() * 30 * multiplier
-  let speed = Math.random() * 100 + 15
+  let speed = Math.random() * 100 + 25
   let img = pickRandom(meteorImages)
   let created = new Meteor(x, y, img, angle, speed)
 
@@ -393,19 +391,19 @@ function initGame() {
   createHero();
 
   eventEmitter.on(Messages.KEY_EVENT_UP, () => {
-    hero.y -= 5;
+    hero.y -= 10;
   })
 
   eventEmitter.on(Messages.KEY_EVENT_DOWN, () => {
-    hero.y += 5;
+    hero.y += 10;
   });
 
   eventEmitter.on(Messages.KEY_EVENT_LEFT, () => {
-    hero.x -= 5;
+    hero.x -= 10;
   });
 
   eventEmitter.on(Messages.KEY_EVENT_RIGHT, () => {
-    hero.x += 5;
+    hero.x += 10;
   });
 
   eventEmitter.on(Messages.KEY_EVENT_HERO_FIRE, () => {
